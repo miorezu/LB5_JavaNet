@@ -19,15 +19,15 @@ public class Server extends Thread {
             this.serverSocket = new ServerSocket(serverPort);
             System.out.println("Server started");
             while (true) {
-                System.out.println("New Client Waiting...");
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("New client: " + clientSocket);
-
                 System.out.println("Enter 0 to end the server or another num to continue: ");
                 Scanner inScanner = new Scanner(System.in);
                 if (inScanner.nextInt() == 0) {
                     return;
                 }
+
+                System.out.println("New Client Waiting...");
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("New client: " + clientSocket);
 
                 ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
                 String classFile = (String) in.readObject();
