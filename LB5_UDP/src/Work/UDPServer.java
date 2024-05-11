@@ -1,30 +1,26 @@
 package Work;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class UDPServer {
 
-
-    private ActiveUsers userList = null; // список зареєстрованих
-    // комп’ютерів
-    private DatagramSocket socket = null; // датаграмний сокет для
-    // взаємодії комп’ютерів по мережі
-    private DatagramPacket packet = null; // датаграмний пакет для
-    // отримання і відправки інформації
-    private InetAddress address = null; // клас, який представляє мережеву
-    // адресу комп’ютера
-    private int port = -1; // номер порту
+    private ActiveUsers userList;
+    private DatagramSocket socket = null; // датаграмний сокет для взаємодії комп’ютерів по мережі
+    private DatagramPacket packet = null; // датаграмний пакет для отримання і відправки інформації
+    private InetAddress address = null; // клас, який представляє мережеву адресу комп’ютера
+    private int port = -1;
 
     public UDPServer(int serverPort) {
+        userList = new ActiveUsers();
+
         try {
             socket = new DatagramSocket(serverPort);
+
         } catch (SocketException e) {
             System.out.println("Error: " + e);
         }
-        userList = new ActiveUsers();
     }
 
     public void work(int bufferSize) {
@@ -33,8 +29,13 @@ public class UDPServer {
             while (true) { // безкінечний цикл роботи з клієнтами
                 getUserData(bufferSize); // отримання запиту клієнта
                 log(address, port); // вивід інформації про клієнта на екран
-                sendUserData(); // формування та відправка відповіді
-// клієнту
+                sendUserData(); // формування та відправка відповіді клієнту
+                System.out.println("Type 0 to end server\n" +
+                        "or something else to continue working: ");
+                Scanner inScanner = new Scanner(System.in);
+                if (inScanner.nextInt() == 0) {
+                    return;
+                }
             }
         } catch (IOException e) {
             System.out.println("Error: " + e);
@@ -49,8 +50,8 @@ public class UDPServer {
                 " port: " + port);
     }
 
-    private void clear(byte[] arr) {
-        return;
+    private void clear(byte[] array) {
+        Arrays.fill(array, (byte) 0);
     }
 
     private void getUserData(int bufferSize) throws IOException {
@@ -86,8 +87,4 @@ public class UDPServer {
     public static void main(String[] args) {
         (new UDPServer(1501)).work(256);
     }
-
-
-
-
 }
